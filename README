@@ -1,0 +1,40 @@
+Light Curve Simulation README
+
+GENERAL
+------------------------------------------
+This is a light curve simulation for close binary systems with an accretion disc and a hot spot. It works by rotating point clouds in three dimensions and calculating flux from visible areas. 
+
+
+USAGE:
+------------------------------------------
+Fill in values in LCparams structure, then pass to LCsim(). This function outputs a 2D array of double values such as
+------------------
+|  t(0)  | F(0)  |
+|  t(1)  | F(1)  |
+    ..      ..    
+with time values in column 1 and total flux in column 2. The output pointer points to memory allocated inside LCsim(), and must be freed by the user. Additionally, LCsim() reports the total number of data points by setting a value for params.Ns for number of samples. This can be used for loops over the set of flux data points. Data can also be output to a file by setting the params.fileOut flag and params.fileName string. See demo.c for an example of use.
+
+
+HOT SPOT:
+------------------------------------------
+Hot spot is modeled as a small hot sphere on the edge of the disc with temperature decaying exponentially from THS to the disc temp. The hot spot can be turned off by setting params.hot_scale=0.
+
+
+QHULL LIBRARY: 
+------------------------------------------
+This code requires the qhull library for computing convex hulls. Documentation can be found at www.qhull.org, but it's pretty sparse for integration in C code. Install the qhull libraries by cloning the repository, then making:
+git clone git://gitorious.org/qhull/qhull.git qhull
+cd qhull
+make all
+make install
+When I make all, I get an error at the end about sign-conversion or something, but this is only during the testing phase; the libraries are already installed. Just ignore and make install.
+
+
+GSL LIBRARY:
+------------------------------------------
+This code requires the GNU scientific library (GSL) for numerical routines.  Documentation can be found at http://www.gnu.org/software/gsl/, and is very good.
+
+
+NUMERICAL NOISE:
+------------------------------------------
+There will be some amount of noise, especially in the flux from the accretion disc, due to the discretization of the surface. This is unavoidable, but can be mitigated by increasing the number of points used to construct the objects (particularly the disc and the WD primary). If desired, these values can be changed in the LC_funcs.c -> build_objects() function in the calls to the object creation functions. The default values represent my choices for balance between noise and computation time. And hey, maybe this simulates some sky noise!
